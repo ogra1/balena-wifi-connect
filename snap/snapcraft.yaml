@@ -57,8 +57,6 @@ parts:
     plugin: npm
     build-snaps:
       - node/12/stable
-    stage-snaps:
-      - node/12/stable
     organize:
       lib/node_modules/wifi-connect-ui/build: ui
     prime:
