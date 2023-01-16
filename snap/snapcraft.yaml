@@ -1,0 +1,61 @@
+name: balena-wifi-connect
+base: core22
+adopt-info: wifi-connect
+summary: Easy WiFi setup for Linux devices from your mobile phone or laptop
+description: |
+  WiFi Connect is a utility for dynamically setting the WiFi configuration on
+  a Linux device via a captive portal. WiFi credentials are specified by
+  connecting with a mobile phone or laptop to the access point that
+  WiFi Connect creates.
+
+grade: stable
+confinement: strict
+
+apps:
+  wifi-connect:
+    command: wifi-connect
+    daemon: simple
+    install-mode: disable
+    environment:
+      UI_DIRECTORY: $SNAP/ui
+    plugs:
+      - firewall-control
+      - network
+      - network-bind
+      - network-manager
+
+layout:
+  /var/lib/misc:
+    bind: $SNAP_DATA/misc
+
+parts:
+  wifi-connect:
+    source: https://github.com/balena-os/wifi-connect.git
+    source-tag: v4.4.6
+    plugin: rust
+    build-packages:
+      - cargo
+      - libdbus-1-dev
+    stage-packages:
+      - dnsmasq
+    override-build: |
+      cargo update
+      craftctl default
+      # set version
+      VER="$(grep "^\[package\]" -A5 Cargo.toml | grep ^version | sed 's/^.* = //'| tr -d '"')"
+      craftctl set version="$VER"
+    organize:
+      bin/wifi-connect: wifi-connect
+  ui:
+    source: https://github.com/balena-os/wifi-connect.git
+    source-tag: v4.4.6
+    source-subdir: ui
+    plugin: npm
+    build-snaps:
+      - node/12/stable
+    stage-snaps:
+      - node/12/stable
+    organize:
+      lib/node_modules/wifi-connect-ui/build: ui
+    prime:
+      - -lib/node_modules/wifi-connect-ui
