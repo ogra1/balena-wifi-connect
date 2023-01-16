@@ -1,0 +1,5 @@
+#! /bin/sh
+
+if snapctl services ${SNAP_NAME}.wifi-connect | grep -q inactive; then
+  snapctl start --enable ${SNAP_NAME}.wifi-connect 2>&1 || true
+fi
