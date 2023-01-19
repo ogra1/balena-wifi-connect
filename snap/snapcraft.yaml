@@ -23,10 +23,11 @@ apps:
     environment:
       UI_DIRECTORY: $SNAP/ui
     plugs:
-      - firewall-control
+      - mount-observe
       - network
       - network-bind
       - network-manager
+      - system-observe
 
 layout:
   /var/lib/misc:
